@@ -28,9 +28,11 @@ initializeDBAndServer();
 //API 1
 app.get("/players/", async (request, response) => {
   const getPlayersQuery = `
-    SELECT *
-    FROM cricket_team
-    ORDER BY player_id;`;
+    SELECT player_id AS playerId,
+    player_name AS playerName,
+    jersey_number AS jerseyNumber,
+    role
+    FROM cricket_team`;
   const playersArray = await db.all(getPlayersQuery);
   response.send(playersArray);
 });
@@ -55,7 +57,11 @@ ${jerseyNumber},
 app.get("/players/:playerId/", async (request, response) => {
   const { playerId } = request.params;
   const getPlayerQuery = `
-  SELECT * FROM cricket_team WHERE player_id = ${playerId};`;
+  SELECT player_id AS playerId,
+    player_name AS playerName,
+    jersey_number AS jerseyNumber,
+    role
+    FROM cricket_team WHERE player_id = ${playerId}`;
   const player = await db.get(getPlayerQuery);
   response.send(player);
 });
@@ -77,7 +83,7 @@ app.put("/players/:playerId/", async (request, response) => {
 
 //API 5
 app.delete("/players/:playerId/", async (request, response) => {
-  const { playerId } = request.params;
+  let { playerId } = request.params;
   const deletePlayerQuery = `
     DELETE FROM cricket_team WHERE player_id = ${playerId};`;
   await db.run(deletePlayerQuery);
